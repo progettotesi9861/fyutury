@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Fyutury">
+<title>Fyutury — Come stai?</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f1923 0%, #1e2a3a 100%);
+  min-height: 100vh; min-height: 100dvh;
+  padding: 20px 16px 40px; color: #fff;
+}
+.card {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 26px 20px;
+  max-width: 400px; margin: 0 auto;
+}
+.logo { text-align: center; margin-bottom: 18px; }
+.logo-icon { font-size: 42px; display: block; margin-bottom: 4px; }
+.logo-title { font-size: 20px; font-weight: 700; color: #f0b429; }
+.greeting { text-align: center; margin-bottom: 22px; }
+.greeting h2 { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+.greeting p { font-size: 13px; color: rgba(255,255,255,0.55); }
+.field { margin-bottom: 20px; }
+.field label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 9px; color: rgba(255,255,255,0.85); }
+.stars { display: flex; gap: 8px; }
+.star-btn {
+  flex: 1; padding: 12px 4px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: white; font-size: 18px; cursor: pointer; text-align: center;
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.star-btn.selected { border-color: #f0b429; background: rgba(240,180,41,0.2); }
+.yn-row { display: flex; gap: 10px; }
+.yn-btn {
+  flex: 1; padding: 14px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: white; font-size: 15px; font-weight: 600; cursor: pointer;
+  transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+}
+.yn-btn.yes.selected { border-color: #e05252; background: rgba(224,82,82,0.2); }
+.yn-btn.no.selected  { border-color: #4caf7d; background: rgba(76,175,125,0.2); }
+textarea {
+  width: 100%; padding: 14px; border-radius: 12px;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.06);
+  color: white; font-size: 14px; resize: none; min-height: 80px;
+  font-family: inherit;
+}
+textarea::placeholder { color: rgba(255,255,255,0.3); }
+textarea:focus { outline: none; border-color: #f0b429; }
+.btn-invia {
+  width: 100%; padding: 17px; border-radius: 14px;
+  background: linear-gradient(135deg, #f0b429, #e8a000);
+  color: #1a1a1a; font-size: 16px; font-weight: 700;
+  border: none; cursor: pointer; margin-top: 6px;
+}
+.btn-invia:disabled { opacity: 0.5; }
+.success { text-align: center; padding: 40px 20px; display: none; }
+.success-icon { font-size: 60px; display: block; margin-bottom: 14px; }
+.success h2 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.success p { color: rgba(255,255,255,0.55); font-size: 13px; }
+.error-card { text-align: center; padding: 40px 20px; display: none; }
+.error-card h2 { font-size: 18px; color: #e05252; margin-bottom: 8px; }
+.error-card p { color: rgba(255,255,255,0.55); font-size: 13px; }
+</style>
+</head>
+<body>
+
+<div class="card" id="formCard">
+  <div class="logo">
+    <span class="logo-icon">🛡️</span>
+    <span class="logo-title">Fyutury</span>
+  </div>
+  <div class="greeting">
+    <h2 id="greetingName">Ciao! 👋</h2>
+    <p>Il tuo check-in giornaliero · meno di un minuto</p>
+  </div>
+
+  <div class="field">
+    <label>😊 Come ti senti oggi?</label>
+    <div class="stars" id="grpBenessere">
+      <button class="star-btn" data-val="1" onclick="sel('benessere',1,this)">😞<br><small>1</small></button>
+      <button class="star-btn" data-val="2" onclick="sel('benessere',2,this)">😐<br><small>2</small></button>
+      <button class="star-btn" data-val="3" onclick="sel('benessere',3,this)">🙂<br><small>3</small></button>
+      <button class="star-btn" data-val="4" onclick="sel('benessere',4,this)">😊<br><small>4</small></button>
+      <button class="star-btn" data-val="5" onclick="sel('benessere',5,this)">😄<br><small>5</small></button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>😴 Hai dormito bene stanotte?</label>
+    <div class="stars" id="grpSonno">
+      <button class="star-btn" data-val="1" onclick="sel('sonno',1,this)">😞<br><small>1</small></button>
+      <button class="star-btn" data-val="2" onclick="sel('sonno',2,this)">😐<br><small>2</small></button>
+      <button class="star-btn" data-val="3" onclick="sel('sonno',3,this)">🙂<br><small>3</small></button>
+      <button class="star-btn" data-val="4" onclick="sel('sonno',4,this)">😊<br><small>4</small></button>
+      <button class="star-btn" data-val="5" onclick="sel('sonno',5,this)">😄<br><small>5</small></button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>💨 Hai avuto affanno o difficoltà respiratorie?</label>
+    <div class="yn-row">
+      <button class="yn-btn yes" onclick="selYN('affanno',true,this)">⚠️ Sì</button>
+      <button class="yn-btn no"  onclick="selYN('affanno',false,this)">✅ No</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>❤️ Hai avuto palpitazioni o battito irregolare?</label>
+    <div class="yn-row">
+      <button class="yn-btn yes" onclick="selYN('palpitazioni',true,this)">⚠️ Sì</button>
+      <button class="yn-btn no"  onclick="selYN('palpitazioni',false,this)">✅ No</button>
+    </div>
+  </div>
+
+  <div class="field">
+    <label>📝 Note aggiuntive (opzionale)</label>
+    <textarea id="note" placeholder="Scrivi qui eventuali sintomi o note..."></textarea>
+  </div>
+
+  <button class="btn-invia" id="btnInvia" onclick="invia()">Invia ✓</button>
+</div>
+
+<div class="success" id="successCard">
+  <span class="success-icon">🎉</span>
+  <h2 id="successName">Grazie!</h2>
+  <p>Il tuo sondaggio è stato inviato.<br>A domani! 👋</p>
+</div>
+
+<div class="error-card" id="errorCard">
+  <h2>⚠️ Link non valido</h2>
+  <p>Chiedi al tuo medico di inviarti un nuovo link.</p>
+</div>
+
+<script>
+// Leggi parametri URL
+const params = new URLSearchParams(window.location.search)
+const pazienteId = params.get('id')
+const nome = params.get('nome') || 'Paziente'
+const cognome = params.get('cognome') || ''
+const nomeCompleto = (nome + ' ' + cognome).trim()
+
+// Validazione
+if (!pazienteId) {
+  document.getElementById('formCard').style.display = 'none'
+  document.getElementById('errorCard').style.display = 'block'
+} else {
+  document.getElementById('greetingName').textContent = `Ciao ${nome}! 👋`
+  document.getElementById('successName').textContent = `Grazie ${nome}!`
+}
+
+const dati = { pazienteId, nome: nomeCompleto, benessere: null, sonno: null, affanno: null, palpitazioni: null, note: '' }
+
+function sel(campo, val, btn) {
+  dati[campo] = val
+  btn.closest('.stars').querySelectorAll('.star-btn').forEach(b =>
+    b.classList.toggle('selected', parseInt(b.dataset.val) === val))
+}
+function selYN(campo, val, btn) {
+  dati[campo] = val
+  btn.parentElement.querySelectorAll('.yn-btn').forEach(b => b.classList.remove('selected'))
+  btn.classList.add('selected')
+}
+
+
+async function invia() {
+  if (dati.benessere === null) { alert('Indica come ti senti oggi'); return }
+  if (dati.sonno === null) { alert('Indica come hai dormito'); return }
+  if (dati.affanno === null) { alert('Indica se hai avuto affanno'); return }
+  if (dati.palpitazioni === null) { alert('Indica se hai avuto palpitazioni'); return }
+  dati.note = document.getElementById('note').value
+
+  const btn = document.getElementById('btnInvia')
+  btn.disabled = true
+  btn.textContent = 'Apertura email...'
+
+  const oggi = new Date().toISOString().split('T')[0]
+  const ora = new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })
+  const scoreLabel = v => !v ? 'Non indicato' : ['Molto male (1/5)', 'Male (2/5)', 'Discreto (3/5)', 'Bene (4/5)', 'Molto bene (5/5)'][v-1]
+
+  const jsonData = JSON.stringify({
+    FYUTURY_CONNECT: true,
+    pazienteId,
+    nome: nomeCompleto,
+    data: oggi,
+    benessere: dati.benessere,
+    sonno: dati.sonno,
+    affanno: dati.affanno,
+    palpitazioni: dati.palpitazioni,
+    note: dati.note
+  })
+
+  const subject = encodeURIComponent(`FYUTURY_CONNECT|${pazienteId}|${oggi}|${nomeCompleto}`)
+  const body = encodeURIComponent(
+`Sondaggio giornaliero Fyutury
+Paziente: ${nomeCompleto}
+Data: ${oggi} alle ${ora}
+
+Come ti sei sentito oggi: ${scoreLabel(dati.benessere)}
+Qualita del sonno: ${scoreLabel(dati.sonno)}
+Affanno / difficolta respiratorie: ${dati.affanno ? 'SI' : 'No'}
+Palpitazioni / battito irregolare: ${dati.palpitazioni ? 'SI' : 'No'}
+${dati.note ? 'Note: ' + dati.note : ''}
+
+DATA:${jsonData}:END`)
+
+  window.location.href = `mailto:progetto.tesi9861@gmail.com?subject=${subject}&body=${body}`
+
+  setTimeout(() => {
+    document.getElementById('formCard').style.display = 'none'
+    document.getElementById('successCard').style.display = 'block'
+  }, 800)
+}
+</script>
+</body>
+</html>
